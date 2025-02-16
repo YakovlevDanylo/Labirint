@@ -1,5 +1,10 @@
 from pygame import *
 
+mixer.init()
+mixer.music.load("jungles.ogg")
+mixer.music.play()
+
+
 class GameSprite(sprite.Sprite):
     def __init__(self, filename, x, y, w, h, speed):
         super().__init__()
@@ -27,13 +32,28 @@ class Player(GameSprite):
 
         super().update(screen)
 
+class Enemy(GameSprite):
+    direction = "Right"
+
+    def update(self, screen):
+        if self.direction == "Right":
+            self.rect.x += self.speed
+        if self.direction == "Left":
+            self.rect.x -= self.speed
+
+        if self.rect.x <= 470:
+            self.direction = "Right"
+        if self.rect.x >= 620:
+            self.direction = "Left"
+
+        super().update(screen)
 
 window = display.set_mode((700, 500))
 display.set_caption("Лабіринт")
 
 background = transform.scale(image.load("background.jpg"), (700, 500))
 player = Player("cat.jpg", 100, 400, 70, 70, 5)
-
+enemy = Enemy("steve.jpg", 470, 250, 70, 70, 5)
 
 timer = time.Clock()
 fps = 60
@@ -50,7 +70,7 @@ while not end_game:
         window.blit(background, (0,0))
 
         player.update(window)
-
+        enemy.update(window)
 
         display.update()
         timer.tick(fps)
